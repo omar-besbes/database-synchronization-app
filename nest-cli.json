@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/examen-tp-rabbitmq/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/examen-tp-rabbitmq/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/examen-tp-rabbitmq",
+  "projects": {
+    "examen-tp-rabbitmq": {
+      "type": "application",
+      "root": "apps/examen-tp-rabbitmq",
+      "entryFile": "main",
+      "sourceRoot": "apps/examen-tp-rabbitmq/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/examen-tp-rabbitmq/tsconfig.app.json"
+      }
+    },
+    "head": {
+      "type": "application",
+      "root": "apps/head",
+      "entryFile": "main",
+      "sourceRoot": "apps/head/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/head/tsconfig.app.json"
+      }
+    },
+    "branch": {
+      "type": "application",
+      "root": "apps/branch",
+      "entryFile": "main",
+      "sourceRoot": "apps/branch/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/branch/tsconfig.app.json"
+      }
+    },
+    "configuration": {
+      "type": "library",
+      "root": "libs/configuration",
+      "entryFile": "index",
+      "sourceRoot": "libs/configuration/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/configuration/tsconfig.lib.json"
+      }
+    },
+    "base": {
+      "type": "library",
+      "root": "libs/base",
+      "entryFile": "index",
+      "sourceRoot": "libs/base/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/base/tsconfig.lib.json"
+      }
+    },
+    "rabbitmq": {
+      "type": "library",
+      "root": "libs/rabbitmq",
+      "entryFile": "index",
+      "sourceRoot": "libs/rabbitmq/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/rabbitmq/tsconfig.lib.json"
+      }
+    }
+  }
+}
