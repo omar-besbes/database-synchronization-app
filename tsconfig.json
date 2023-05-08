@@ -18,23 +18,29 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@config/configuration": [
+      "@config": [
         "libs/configuration/src"
       ],
-      "@config/configuration/*": [
+      "@config/*": [
         "libs/configuration/src/*"
       ],
-      "@base/base": [
+      "@base": [
         "libs/base/src"
       ],
-      "@base/base/*": [
+      "@base/*": [
         "libs/base/src/*"
       ],
-      "@rabbitmq/rabbitmq": [
+      "@rabbitmq": [
         "libs/rabbitmq/src"
       ],
-      "@rabbitmq/rabbitmq/*": [
+      "@rabbitmq/*": [
         "libs/rabbitmq/src/*"
+      ],
+      "@product-sales": [
+        "libs/product-sales/src"
+      ],
+      "@product-sales/*": [
+        "libs/product-sales/src/*"
       ]
     }
   }

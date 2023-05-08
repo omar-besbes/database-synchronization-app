@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
-import { ConfigurationService } from '@config/configuration';
+import { ConfigurationService } from '@config';
 import { ValidationPipe } from '@nestjs/common';
-import { BaseInterceptor } from '@base/base';
+import { BaseInterceptor } from '@base';
 import { HeadModule } from './head.module';
 
 async function bootstrap() {

@@ -24,7 +24,13 @@
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",
+    "@nestjs/mapped-types": "^1.2.2",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/typeorm": "^9.0.1",
+    "amqplib": "^0.10.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
+    "mysql2": "^3.3.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "typeorm": "^0.3.15"
@@ -34,6 +40,7 @@
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
+    "@types/amqplib": "^0.10.1",
     "@types/express": "^4.17.13",
     "@types/jest": "29.5.0",
     "@types/node": "18.15.11",
@@ -76,7 +83,9 @@
     ],
     "moduleNameMapper": {
       "^@config/configuration(|/.*)$": "<rootDir>/libs/configuration/src/$1",
-      "^@base/base(|/.*)$": "<rootDir>/libs/base/src/$1"
+      "^@base/base(|/.*)$": "<rootDir>/libs/base/src/$1",
+      "^@rabbitmq/rabbitmq(|/.*)$": "<rootDir>/libs/rabbitmq/src/$1",
+      "^@product-sales/product-sales(|/.*)$": "<rootDir>/libs/product-sales/src/$1"
     }
   },
   "lint-staged": {

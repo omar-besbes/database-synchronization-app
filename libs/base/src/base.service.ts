@@ -1,6 +1,6 @@
 import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { BaseEntity } from '@base/base/entities/base.entity';
+import { BaseEntity } from '@base/entities/base.entity';
 
 @Injectable()
 export class BaseService<Entity extends BaseEntity> {

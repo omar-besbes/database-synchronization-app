@@ -63,6 +63,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/rabbitmq/tsconfig.lib.json"
       }
+    },
+    "product-sales": {
+      "type": "library",
+      "root": "libs/product-sales",
+      "entryFile": "index",
+      "sourceRoot": "libs/product-sales/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/product-sales/tsconfig.lib.json"
+      }
     }
   }
 }
