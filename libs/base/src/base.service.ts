@@ -1,4 +1,9 @@
-import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm';
+import {
+	DeepPartial,
+	FindManyOptions,
+	FindOptionsWhere,
+	Repository,
+} from 'typeorm';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { BaseEntity } from '@base/entities/base.entity';
 
@@ -18,11 +23,27 @@ export class BaseService<Entity extends BaseEntity> {
 		...args: unknown[]
 	): Promise<Entity> {
 		const entity = this.repository.create(createDto);
+		this.logger.log(entity.id);
 		return await this.repository.save(entity);
 	}
 
-	async findAll(...args: unknown[]): Promise<Entity[]> {
-		return this.repository.find();
+	async createMany(
+		createDtos: DeepPartial<Entity>[],
+		...args: unknown[]
+	): Promise<Entity[]> {
+		const entities = this.repository.create(createDtos);
+		return Promise.all(
+			entities.map((entity) => {
+				return this.repository.save(entity);
+			}),
+		);
+	}
+
+	async findMany(
+		arg?: FindManyOptions<Entity>,
+		...args: unknown[]
+	): Promise<Entity[]> {
+		return this.repository.find(arg);
 	}
 
 	async findOne(id: Entity['id'], ...args: unknown[]): Promise<Entity> {
@@ -37,7 +58,7 @@ export class BaseService<Entity extends BaseEntity> {
 		return entity;
 	}
 
-	async findBy(
+	async findOneBy(
 		arg: FindOptionsWhere<Entity>,
 		...args: unknown[]
 	): Promise<Entity> {
@@ -52,11 +73,23 @@ export class BaseService<Entity extends BaseEntity> {
 
 	async update(
 		entity: Entity,
-		updateDto: Partial<Entity>,
+		updateDto: DeepPartial<Entity>,
 		...args: unknown[]
 	): Promise<Entity> {
 		entity = { ...entity, ...updateDto };
 		return await this.repository.save(entity);
+	}
+
+	async updateMany(
+		entities: { entity: Entity; dto: DeepPartial<Entity> }[],
+		...args: unknown[]
+	): Promise<Entity[]> {
+		return Promise.all(
+			entities.map(({ entity, dto }) => {
+				entity = { ...entity, ...dto };
+				return this.repository.save(entity);
+			}),
+		);
 	}
 
 	async remove(

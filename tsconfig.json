@@ -41,6 +41,12 @@
       ],
       "@product-sales/*": [
         "libs/product-sales/src/*"
+      ],
+      "@sync": [
+        "libs/sync/src"
+      ],
+      "@sync/*": [
+        "libs/sync/src/*"
       ]
     }
   }

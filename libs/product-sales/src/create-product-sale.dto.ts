@@ -1,5 +1,5 @@
 import { IProductSales } from '@product-sales/product-sales.interface';
-import { IsInt, IsNumber, IsString } from 'class-validator';
+import { IsDate, IsInt, IsNumber, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateProductSaleDto implements IProductSales {
@@ -10,6 +10,7 @@ export class CreateProductSaleDto implements IProductSales {
 	cost: number;
 
 	@Type(() => Date)
+	@IsDate()
 	date: Date;
 
 	@IsString()

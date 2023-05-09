@@ -22,11 +22,28 @@ export class ProductSalesService extends BaseService<ProductSales> {
 		return super.create(createDto, ...args);
 	}
 
+	async createMany(
+		createDtos: CreateProductSaleDto[],
+		...args
+	): Promise<ProductSales[]> {
+		return super.createMany(createDtos, ...args);
+	}
+
 	async update(
 		entity: ProductSales,
 		updateDto: UpdateProductSaleDto,
 		...args
 	): Promise<ProductSales> {
 		return super.update(entity, updateDto, ...args);
+	}
+
+	async updateMany(
+		entities: {
+			entity: ProductSales;
+			dto: UpdateProductSaleDto;
+		}[],
+		...args
+	): Promise<ProductSales[]> {
+		return super.updateMany(entities, ...args);
 	}
 }

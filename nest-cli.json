@@ -1,24 +1,15 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/examen-tp-rabbitmq/src",
+  "sourceRoot": "apps/branch/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/examen-tp-rabbitmq/tsconfig.app.json"
+    "tsConfigPath": "apps/branch/tsconfig.app.json"
   },
   "monorepo": true,
-  "root": "apps/examen-tp-rabbitmq",
+  "root": "apps/branch",
   "projects": {
-    "examen-tp-rabbitmq": {
-      "type": "application",
-      "root": "apps/examen-tp-rabbitmq",
-      "entryFile": "main",
-      "sourceRoot": "apps/examen-tp-rabbitmq/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/examen-tp-rabbitmq/tsconfig.app.json"
-      }
-    },
     "head": {
       "type": "application",
       "root": "apps/head",
@@ -71,6 +62,15 @@
       "sourceRoot": "libs/product-sales/src",
       "compilerOptions": {
         "tsConfigPath": "libs/product-sales/tsconfig.lib.json"
+      }
+    },
+    "sync": {
+      "type": "library",
+      "root": "libs/sync",
+      "entryFile": "index",
+      "sourceRoot": "libs/sync/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/sync/tsconfig.lib.json"
       }
     }
   }

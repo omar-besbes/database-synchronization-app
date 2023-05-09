@@ -2,13 +2,13 @@ import {
 	BaseEntity as BasicEntity,
 	CreateDateColumn,
 	DeleteDateColumn,
-	PrimaryColumn,
+	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm';
 import { IBase } from '@base/interfaces/base.inerface';
 
 export abstract class BaseEntity extends BasicEntity implements IBase {
-	@PrimaryColumn('uuid')
+	@PrimaryGeneratedColumn('uuid')
 	id: string;
 
 	@CreateDateColumn({
@@ -16,14 +16,13 @@ export abstract class BaseEntity extends BasicEntity implements IBase {
 		type: 'timestamp',
 		update: false,
 	})
-	createdAt: string;
+	createdAt: Date;
 
-	@PrimaryColumn()
 	@UpdateDateColumn({
 		name: 'updated_at',
 		type: 'timestamp',
 	})
-	updatedAt: string;
+	updatedAt: Date;
 
 	@DeleteDateColumn({
 		name: 'deleted_at',
@@ -31,5 +30,5 @@ export abstract class BaseEntity extends BasicEntity implements IBase {
 		insert: false,
 		nullable: true,
 	})
-	deletedAt?: string;
+	deletedAt?: Date;
 }

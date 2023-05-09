@@ -26,10 +26,16 @@ export class RabbitmqService {
 	}
 
 	async initialize() {
+		await this.connect();
 		await this.channel.assertQueue(this.queue, { durable: true });
-		await this.channel.assertExchange(this.send_exchange, 'fanout');
-		await this.channel.assertExchange(this.consume_exchange, 'fanout');
+		await this.channel.assertExchange(this.send_exchange, 'fanout', {
+			durable: true,
+		});
+		await this.channel.assertExchange(this.consume_exchange, 'fanout', {
+			durable: true,
+		});
 		await this.channel.bindQueue(this.queue, this.consume_exchange, this.id);
+		await this.close();
 	}
 
 	async connect() {
@@ -55,13 +61,13 @@ export class RabbitmqService {
 		);
 
 		this.logger.log(
-			`sending to send exchange ${this.send_exchange} message: \n${message}`,
+			`sending to exchange ${this.send_exchange} message: \n${message}`,
 		);
 		await this.close();
 		return result;
 	}
 
-	async sendAll(messages: string[], options?: amqp.Options.Publish) {
+	async sendMany(messages: string[], options?: amqp.Options.Publish) {
 		await this.connect();
 
 		const results: boolean[] = [];
@@ -78,7 +84,7 @@ export class RabbitmqService {
 		});
 
 		this.logger.log(
-			`sending to send exchange ${this.send_exchange} message: \n${messages}`,
+			`sending to exchange ${this.send_exchange} message: \n${messages}`,
 		);
 		await this.close();
 		return results;
@@ -88,10 +94,7 @@ export class RabbitmqService {
 		await this.connect();
 
 		let message: string;
-		const msg = await this.channel.get(
-			this.queue,
-			options ?? { noAck: true },
-		);
+		const msg = await this.channel.get(this.queue, options);
 		if (msg) {
 			message = msg.content.toString();
 			await this.channel.ack(msg);
@@ -104,24 +107,25 @@ export class RabbitmqService {
 
 	async consumeAll(options?: amqp.Options.Consume) {
 		await this.connect();
+		const buffer_size = 10;
+		await this.channel.prefetch(buffer_size);
 
-		const messages: string[] = [];
-		const processMessage = async () => {
-			const msg = await this.channel.get(
-				this.queue,
-				options ?? { noAck: true },
-			);
-			if (msg) {
-				messages.push(msg.content.toString());
-				await this.channel.ack(msg);
-				await processMessage();
+		let messages: amqp.GetMessage[] = [];
+		do {
+			messages = [];
+			for (let i = 0; i < buffer_size; i++) {
+				const msg = await this.channel.get(this.queue, options);
+				if (msg) messages.push(msg);
+				else break;
 			}
-		};
 
-		await processMessage();
+			for (const message of messages) {
+				await this.channel.ack(message);
+			}
+		} while (messages.length === buffer_size);
 
 		this.logger.log(`consuming from queue ${this.queue}: \n${messages}`);
 		await this.close();
-		return messages;
+		return messages.map((message) => message.content.toString());
 	}
 }
