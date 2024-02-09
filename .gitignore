@@ -39,3 +39,10 @@ lerna-debug.log*
 .env.local
 .env.*
 .env.*.local
+
+# yarn
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/patches
+.pnp.*
