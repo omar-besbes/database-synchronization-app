@@ -1,6 +1,8 @@
-import * as process from 'process';
 import { registerAs } from '@nestjs/config';
 import { DatabaseType } from 'typeorm';
+import { ConfigKeys } from '@config/config-keys';
+import { IsFQDN, IsNotEmpty, IsPort } from 'class-validator';
+import extract from '@config/validate';
 
 export interface DatabaseConfig {
 	type: DatabaseType;
@@ -11,18 +13,36 @@ export interface DatabaseConfig {
 	database?: string;
 }
 
+class EnvVariables {
+	@IsNotEmpty()
+	DB_TYPE: DatabaseType;
+	@IsNotEmpty()
+	DB_USERNAME: string;
+	@IsNotEmpty()
+	DB_PASSWORD: string;
+	@IsFQDN({
+		allow_numeric_tld: true,
+		require_tld: false,
+		allow_underscores: true,
+	})
+	DB_HOST: string;
+	@IsPort()
+	DB_PORT: string;
+	@IsNotEmpty()
+	DB_NAME: string;
+}
+
 export const databaseConfig = registerAs(
-	'database',
-	(): DatabaseConfig => ({
-		type: (process.env.DB_TYPE ?? 'mysql') as DatabaseType,
-		username: process.env.DB_USERNAME ?? 'root',
-		password: process.env.DB_PASSWORD ?? 'root',
-		host: process.env.DB_HOST ?? '127.0.0.1',
-		port: parseInt(
-			process.env.DB_PORT && process.env.DB_PORT !== ''
-				? process.env.DB_PORT
-				: '3306',
-		),
-		database: process.env.DB_NAME ?? 'test',
-	}),
+	ConfigKeys.database,
+	(): DatabaseConfig => {
+		const envVariables = extract(EnvVariables);
+		return {
+			type: envVariables.DB_TYPE,
+			username: envVariables.DB_USERNAME,
+			password: envVariables.DB_PASSWORD,
+			host: envVariables.DB_HOST,
+			port: parseInt(envVariables.DB_PORT),
+			database: envVariables.DB_NAME,
+		};
+	},
 );

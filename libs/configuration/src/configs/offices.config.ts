@@ -1,5 +1,7 @@
 import { registerAs } from '@nestjs/config';
-import * as process from 'process';
+import { ConfigKeys } from '@config/config-keys';
+import { IsNotEmpty } from 'class-validator';
+import extract from '@config/validate';
 
 export interface OfficesConfig {
 	id: string;
@@ -9,13 +11,29 @@ export interface OfficesConfig {
 	queue: string;
 }
 
+class EnvVariables {
+	@IsNotEmpty()
+	ID: string;
+	@IsNotEmpty()
+	HEAD_OFFICE: string;
+	@IsNotEmpty()
+	SEND_EXCHANGE: string;
+	@IsNotEmpty()
+	CONSUME_EXCHANGE: string;
+	@IsNotEmpty()
+	QUEUE: string;
+}
+
 export const officesConfig = registerAs(
-	'offices',
-	(): OfficesConfig => ({
-		id: process.env.ID,
-		head_office: process.env.HEAD_OFFICE,
-		send_exchange: process.env.SEND_EXCHANGE,
-		consume_exchange: process.env.CONSUME_EXCHANGE,
-		queue: process.env.QUEUE,
-	}),
+	ConfigKeys.offices,
+	(): OfficesConfig => {
+		const envVariables = extract(EnvVariables);
+		return {
+			id: envVariables.ID,
+			head_office: envVariables.HEAD_OFFICE,
+			send_exchange: envVariables.SEND_EXCHANGE,
+			consume_exchange: envVariables.CONSUME_EXCHANGE,
+			queue: envVariables.QUEUE,
+		};
+	},
 );

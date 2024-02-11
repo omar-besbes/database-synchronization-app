@@ -1,5 +1,7 @@
 import { registerAs } from '@nestjs/config';
-import * as process from 'process';
+import { ConfigKeys } from '@config/config-keys';
+import { IsEnum, IsPort } from 'class-validator';
+import extract from '@config/validate';
 
 export enum Environment {
 	development = 'development',
@@ -12,15 +14,17 @@ export interface MiscConfig {
 	port: number;
 }
 
-export const miscConfig = registerAs(
-	'misc',
-	(): MiscConfig => ({
-		environment:
-			(process.env.NODE_ENV as Environment) ?? Environment.development,
-		port: parseInt(
-			process.env.PORT && process.env.PORT !== ''
-				? process.env.PORT
-				: '3000',
-		),
-	}),
-);
+class EnvVariables {
+	@IsEnum(Environment)
+	NODE_ENV: Environment = Environment.development;
+	@IsPort()
+	PORT: string;
+}
+
+export const miscConfig = registerAs(ConfigKeys.misc, (): MiscConfig => {
+	const envVariables = extract(EnvVariables);
+	return {
+		environment: envVariables.NODE_ENV,
+		port: parseInt(envVariables.PORT),
+	};
+});

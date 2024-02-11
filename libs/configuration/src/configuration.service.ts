@@ -4,22 +4,23 @@ import { DatabaseConfig } from '@config/configs/database.config';
 import { MiscConfig } from '@config/configs/misc.config';
 import { OfficesConfig } from '@config/configs/offices.config';
 import { RabbitmqConfig } from '@config/configs/rabbitmq.config';
+import { ConfigKeys } from '@config/config-keys';
 
 @Injectable()
 export class ConfigurationService extends ConfigService {
 	getDatabaseConfig(): DatabaseConfig {
-		return this.getOrThrow<DatabaseConfig>('database');
+		return this.getOrThrow<DatabaseConfig>(ConfigKeys.database);
 	}
 
 	getMiscConfig(): MiscConfig {
-		return this.getOrThrow<MiscConfig>('misc');
+		return this.getOrThrow<MiscConfig>(ConfigKeys.misc);
 	}
 
 	getOfficesConfig(): OfficesConfig {
-		return this.getOrThrow<OfficesConfig>('offices');
+		return this.getOrThrow<OfficesConfig>(ConfigKeys.offices);
 	}
 
 	getRabbitMQConfig(): RabbitmqConfig {
-		return this.getOrThrow<RabbitmqConfig>('rabbitmq');
+		return this.getOrThrow<RabbitmqConfig>(ConfigKeys.rabbitmq);
 	}
 }
