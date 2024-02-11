@@ -1,0 +1,96 @@
+version: '3.8'
+
+name: database-synchronization-app
+
+services:
+  head_office_db:
+    image: postgres:16
+    environment:
+      - POSTGRES_PASSWORD=/run/secrets/db_password
+      - POSTGRES_USER=/run/secrets/db_username
+      - POSTGRES_DB=${DB_NAME:-db}
+    entrypoint: /usr/local/bin/database_entrypoint.sh
+    volumes:
+      - ${SSL_DIR:?}:/ssl
+      - ./scripts/database_entrypoint.sh:/usr/local/bin/database_entrypoint.sh
+    secrets:
+      - db_username
+      - db_password
+    networks:
+      - head_network
+
+  head_office:
+    build:
+      context: .
+      args:
+        office_type: head
+    env_file:
+      - apps/head/.env.example
+    environment:
+      - RABBITMQ_URL=${RABBITMQ_URL:?}
+      - DB_TYPE=postgres
+      - DB_HOST=head_office_db
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-db}
+      - DB_PASSWORD=/run/secrets/db_password
+      - DB_USERNAME=/run/secrets/db_username
+    secrets:
+      - db_username
+      - db_password
+    depends_on:
+      - rabbitmq
+    networks:
+      - app_network
+      - head_network
+
+  branch_office_db:
+    image: postgres:16
+    environment:
+      - POSTGRES_PASSWORD=/run/secrets/db_password
+      - POSTGRES_USER=/run/secrets/db_username
+      - POSTGRES_DB=${DB_NAME:-db}
+    entrypoint: /usr/local/bin/database_entrypoint.sh
+    volumes:
+      - ${SSL_DIR:?}:/ssl
+      - ./scripts/database_entrypoint.sh:/usr/local/bin/database_entrypoint.sh
+    secrets:
+      - db_username
+      - db_password
+    networks:
+      - branch_network
+
+  branch_office:
+    build:
+      context: .
+      args:
+        office_type: branch
+    env_file:
+      - apps/branch/.env.example
+    environment:
+      - RABBITMQ_URL=${RABBITMQ_URL:?}
+      - DB_TYPE=postgres
+      - DB_HOST=branch_office_db
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-db}
+      - DB_PASSWORD=/run/secrets/db_password
+      - DB_USERNAME=/run/secrets/db_username
+    secrets:
+      - db_username
+      - db_password
+    depends_on:
+      - rabbitmq
+      - head_office
+    networks:
+      - app_network
+      - branch_network
+
+secrets:
+  db_password:
+    file: ${SECRETS_DIR:?}/db_password.txt
+  db_username:
+    file: ${SECRETS_DIR:?}/db_username.txt
+
+networks:
+  app_network:
+  head_network:
+  branch_network:
