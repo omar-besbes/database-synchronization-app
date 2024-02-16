@@ -11,4 +11,4 @@ openssl req -new -x509 -days 365 -nodes -text -out server.crt \
 chmod og-rws server.key # Configure file permission. This is required by postgres, see https://www.postgresql.org/docs/current/ssl-tcp.html#SSL-SETUP
 
 # Print the directory of ssl
-echo "$TEMP_DIR"
+echo "SSL_DIR=$TEMP_DIR"

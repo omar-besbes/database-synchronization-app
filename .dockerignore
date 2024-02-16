@@ -3,3 +3,5 @@
 /docs
 *.log
 .git
+.env
+.env.*

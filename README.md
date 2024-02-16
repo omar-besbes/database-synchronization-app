@@ -47,23 +47,48 @@ Multiple instances of the branch office application can be deployed to synchroni
 
 ## Installation and Setup
 
-We will first show how to set up a HO and a single BO and then how to add other BO.
-
-### Starting the system with a single branch office
-
-1. Clone the repository
+First, clone the repository.
 
 ```sh
 git clone https://github.com/omar-besbes/database-synchronization-app.git
 ```
 
-2. Install dependencies
+<details> 
+<summary> Using `docker compose` (Recommended) </summary>
+
+> The installation process has been thoroughly tested on a Debian machine and is expected to work smoothly on all Unix-based systems. <br>
+> However, it is important to note that compatibility with other operating systems, such as Windows, cannot be guaranteed.
+
+To get our system up and running, please run this:
+
+```sh
+./scripts/generate_secrets.sh > .env
+./scripts/generate_ssl_certificates.sh >> .env
+docker compose up
+```
+
+This will generate a `.env` file containing the necessary credentials and ssl certificates in order for the databases to start.
+
+
+</details>
+
+<details> 
+<summary> Manually </summary>
+
+I don't have any idea why someone would want to start the whole system manually.
+For the sake of completeness, here it is.
+
+We will first show how to set up a HO and a single BO and then how to add other BO.
+
+### Starting the system with a single branch office
+
+1. Install dependencies
 
 ```sh
 yarn
 ```
 
-3. Configure the application settings
+2. Configure the application settings
 
 - make sure you have a relational database up and running for each office you plan on running.
 - make sure you have a RabbitMQ instance up and running. You can find out how to install and set up a RabbitMQ instance
@@ -71,7 +96,7 @@ yarn
 - use the `.env.example` files (there is one in `apps/head` for the head office and one in `apps/branch` for branch
   offices) to generate `.env` for each office. Put them besides the corresponding `.env.example` files.
 
-4. Build & start the applications
+3. Build & start the applications
 
 ```sh
 # build step
@@ -90,6 +115,8 @@ for how the whole system will work. So, to use multiple branch offices, we have 
 we change the `.env` file and start a new branch office. Notice that changing the `.env` will not affect the already
 running instances as environment variables are loaded at startup and are never checked afterward. This is also why it is
 important to wait for the branch office app to start before moving on to another.
+
+</details>
 
 ## Deployment Considerations
 
