@@ -3,8 +3,17 @@ version: '3.8'
 name: database-synchronization-app
 
 services:
+  rabbitmq:
+    image: rabbitmq:management
+    restart: on-failure
+    ports:
+      - "15672:15672" # RabbitMQ management UI
+    networks:
+      - app_network
+
   head_office_db:
     image: postgres:16
+    restart: on-failure
     environment:
       - POSTGRES_PASSWORD=/run/secrets/db_password
       - POSTGRES_USER=/run/secrets/db_username
@@ -24,10 +33,11 @@ services:
       context: .
       args:
         office_type: head
+    restart: on-failure
     env_file:
       - apps/head/.env.example
     environment:
-      - RABBITMQ_URL=${RABBITMQ_URL:?}
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
       - DB_TYPE=postgres
       - DB_HOST=head_office_db
       - DB_PORT=5432
@@ -45,6 +55,7 @@ services:
 
   branch_office_db:
     image: postgres:16
+    restart: on-failure
     environment:
       - POSTGRES_PASSWORD=/run/secrets/db_password
       - POSTGRES_USER=/run/secrets/db_username
@@ -64,10 +75,11 @@ services:
       context: .
       args:
         office_type: branch
+    restart: on-failure
     env_file:
       - apps/branch/.env.example
     environment:
-      - RABBITMQ_URL=${RABBITMQ_URL:?}
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
       - DB_TYPE=postgres
       - DB_HOST=branch_office_db
       - DB_PORT=5432
