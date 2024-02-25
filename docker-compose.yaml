@@ -29,7 +29,7 @@ services:
       - head_network
 
   head_office:
-    image: omarbesbes/head_office:latest
+    image: omarbesbes/database-synchronization-app:head-office
     build:
       context: .
       args:
@@ -72,7 +72,7 @@ services:
       - branch_network
 
   branch_office:
-    image: omarbesbes/branch_office:latest
+    image: omarbesbes/database-synchronization-app:branch-office
     build:
       context: .
       args:
