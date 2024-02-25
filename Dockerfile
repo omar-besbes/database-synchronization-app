@@ -11,7 +11,6 @@ WORKDIR app
 COPY apps apps
 COPY libs libs
 COPY *.json .
-COPY .yarn .yarn
 COPY .yarnrc.yml .yarnrc.yml
 COPY yarn.lock yarn.lock
 

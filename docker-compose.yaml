@@ -29,6 +29,7 @@ services:
       - head_network
 
   head_office:
+    image: omarbesbes/head_office:latest
     build:
       context: .
       args:
@@ -71,6 +72,7 @@ services:
       - branch_network
 
   branch_office:
+    image: omarbesbes/branch_office:latest
     build:
       context: .
       args:
