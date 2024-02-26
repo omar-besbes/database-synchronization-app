@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { HeadController } from './head.controller';
 import { HeadService } from './head.service';
@@ -56,6 +56,6 @@ import { SyncModule } from '@sync/sync.module';
 		SyncModule,
 	],
 	controllers: [HeadController, ProductSalesController],
-	providers: [HeadService],
+	providers: [HeadService, Logger],
 })
 export class HeadModule {}

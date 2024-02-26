@@ -1,12 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigurationService } from '@config';
-import { ValidationPipe } from '@nestjs/common';
+import {Logger, ValidationPipe} from '@nestjs/common';
 import { BaseInterceptor } from '@base';
 import { BranchModule } from './branch.module';
 
 async function bootstrap() {
 	const app = await NestFactory.create(BranchModule);
 	const configService = app.get(ConfigurationService);
+	const logger = app.get(Logger);
 
 	// enable validation
 	app.useGlobalPipes(
@@ -26,6 +27,7 @@ async function bootstrap() {
 	const { port } = configService.getMiscConfig();
 
 	await app.listen(port);
+	logger.log(`BRANCH OFFICE Listening on port ${port}`, "BootstrapFunction");
 }
 
 bootstrap();

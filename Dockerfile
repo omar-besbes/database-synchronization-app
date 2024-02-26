@@ -1,11 +1,11 @@
-# office_type: branch | head
-ARG office_type
+FROM node:18 as build
 
-FROM node:18
+# OFFICE_TYPE: branch | head
+ARG OFFICE_TYPE
+ENV OFFICE_TYPE=${OFFICE_TYPE:?}
 
 # Set working directory
-RUN mkdir app
-WORKDIR app
+WORKDIR /app
 
 # Copy source code in container
 COPY apps apps
@@ -21,7 +21,19 @@ RUN corepack enable
 RUN yarn
 
 # Build the app
-RUN yarn build $office_type
+RUN yarn build ${OFFICE_TYPE}
 
-# Run the app
-CMD ["yarn", "start", "$office_type"]
+FROM node:18
+
+ARG OFFICE_TYPE
+
+# Set working directory
+WORKDIR /app
+
+COPY --from=build /app/dist dist
+COPY --from=build /app/node_modules node_modules
+
+# To avoid
+RUN ln -vs dist/apps/${OFFICE_TYPE}/main.js main.js
+
+CMD ["node", "main.js"]

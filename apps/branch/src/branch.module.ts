@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { BranchController } from './branch.controller';
 import { BranchService } from './branch.service';
 import {
@@ -56,6 +56,6 @@ import { SyncModule } from '@sync/sync.module';
 		SyncModule,
 	],
 	controllers: [BranchController, ProductSalesController],
-	providers: [BranchService],
+	providers: [BranchService, Logger],
 })
 export class BranchModule {}

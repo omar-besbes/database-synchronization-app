@@ -38,7 +38,7 @@ jobs:
           push: true
           tags: omarbesbes/database-synchronization-app:head-office
           build-args: |
-            office_type=head
+            OFFICE_TYPE=head
 
   build-and-push-branch-office:
     runs-on: ubuntu-latest
@@ -61,5 +61,5 @@ jobs:
           push: true
           tags: omarbesbes/database-synchronization-app:branch-office
           build-args: |
-            office_type=branch
+            OFFICE_TYPE=branch
             

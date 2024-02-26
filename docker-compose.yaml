@@ -33,7 +33,7 @@ services:
     build:
       context: .
       args:
-        office_type: head
+        OFFICE_TYPE: head
     restart: on-failure
     env_file:
       - apps/head/.env.example
@@ -76,7 +76,7 @@ services:
     build:
       context: .
       args:
-        office_type: branch
+        OFFICE_TYPE: branch
     restart: on-failure
     env_file:
       - apps/branch/.env.example
