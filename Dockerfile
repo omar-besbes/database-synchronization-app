@@ -33,7 +33,7 @@ WORKDIR /app
 COPY --from=build /app/dist dist
 COPY --from=build /app/node_modules node_modules
 
-# To avoid
+# To avoid string interpolation in CMD instruction
 RUN ln -vs dist/apps/${OFFICE_TYPE}/main.js main.js
 
 CMD ["node", "main.js"]

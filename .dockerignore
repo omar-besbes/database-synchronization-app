@@ -1,6 +1,7 @@
 /node_modules
 /dist
 /docs
+/orchestration
 *.log
 .git
 .env

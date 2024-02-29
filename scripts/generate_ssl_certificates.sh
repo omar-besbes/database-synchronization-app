@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Prepare ssl folder
-TEMP_DIR=$(mktemp -d /tmp/tmp.XXXXXX)
+[ ! -d "$TEMP_DIR" ] && TEMP_DIR=$(mktemp -d /tmp/tmp.XXXXXX)
 chmod o+x "$TEMP_DIR"
 cd "$TEMP_DIR" || exit
 

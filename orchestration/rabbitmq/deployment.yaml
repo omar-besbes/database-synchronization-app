@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-deployment
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+  replicas: 1 # tells deployment to run 1 pod matching the template
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:management
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1.5Gi
+            requests:
+              cpu: 250m
+              memory: 512M
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672

@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bo-deployment
+spec:
+  selector:
+    matchLabels:
+      app: branch-office
+      db: branch-office-db
+  replicas: 3 # tells deployment to run 3 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: branch-office
+        db: branch-office-db
+    spec:
+      initContainers:
+        - name: init-secrets
+          image: finalgene/openssh
+          restartPolicy: never
+          command:
+            [
+              "/bin/bash",
+              "-c",
+              "TEMP_DIR=/secrets /scripts/generate_secrets.sh",
+            ]
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+            - name: secrets
+              mountPath: secrets
+        - name: init-ssl-certs
+          image: finalgene/openssh
+          restartPolicy: never
+          command:
+            [
+              "/bin/bash",
+              "-c",
+              "TEMP_DIR=/ssl /scripts/generate_ssl_certificates.sh",
+            ]
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+            - name: ssl-certs
+              mountPath: ssl
+      containers:
+        - name: app
+          image: omarbesbes/database-synchronization-app:branch-office
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          command: [
+              "/bin/bash",
+              "-c",
+              "
+              DB_PASSWORD=$(cat /secrets/db_password.txt)
+              DB_USERNAME=$(cat /secrets/db_username.txt)
+              node main.js
+              ",
+            ]
+          env:
+            - name: DB_TYPE
+              value: postgres
+            - name: DB_PORT
+              value: "5432"
+            - name: ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: QUEUE
+              value: $(ID)
+          envFrom:
+            - configMapRef:
+                name: app-config
+          volumeMounts:
+            - name: secrets
+              mountPath: secrets
+        - name: db
+          image: postgres:16
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          command: ["/usr/local/bin/database_entrypoint.sh"]
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_NAME
+          volumeMounts:
+            - name: secrets
+              mountPath: secrets
+            - name: ssl-certs
+              mountPath: ssl
+            - name: scripts
+              mountPath: usr/local/bin/database_entrypoint.sh
+              subPath: database_entrypoint.sh
+      volumes:
+        - name: scripts
+          configMap:
+            defaultMode: 055 # This is specified so that scripts are executable when mounted
+            name: scripts
+        - name: secrets
+          emptyDir: {}
+        - name: ssl-certs
+          emptyDir: {}

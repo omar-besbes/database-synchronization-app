@@ -39,6 +39,8 @@ lerna-debug.log*
 .env.local
 .env.*
 .env.*.local
+orchestration/**/.env*
+!orchestration/**/.env.example
 
 # yarn
 .yarn/*
@@ -46,3 +48,6 @@ lerna-debug.log*
 !.yarn/plugins
 !.yarn/patches
 .pnp.*
+
+# hard links
+orchestration/shared/scripts

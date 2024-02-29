@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Prepare secrets folder
-TEMP_DIR=$(mktemp -d /tmp/tmp.XXXXXX)
+[ ! -d "$TEMP_DIR" ] && TEMP_DIR=$(mktemp -d /tmp/tmp.XXXXXX)
 cd "$TEMP_DIR" || exit
 
 # Generate database credentials
