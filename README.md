@@ -3,6 +3,7 @@
 ![RabbitMQ](https://img.shields.io/badge/Rabbitmq-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white)
 ![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white)
 
 ## Overview
 
@@ -13,24 +14,25 @@ communication and synchronization between the head office and branch offices.
 
 ## Features
 
-- Synchronization of databases across multiple offices in real-time.
-- Automatic synchronization upon internet outage recovery.
-- Highly available and fault-tolerant messaging infrastructure using RabbitMQ.
-- Support for dynamic schema evolution.
+-  Synchronization of databases across multiple offices in real-time.
+-  Automatic synchronization upon internet outage recovery.
+-  Highly available and fault-tolerant messaging infrastructure using RabbitMQ.
+-  Support for dynamic schema evolution.
 
 ## Project Structure
 
 The project follows a monorepo style structure, organized into the following directories:
 
-- `apps/`: Contains the source code for both the head office and branch office applications.
-    - `apps/head/`: Source code for the head office application.
-    - `apps/branch/`: Source code for the branch office application.
+-  `apps/`: Contains the source code for both the head office and branch office applications.
 
-- `docs/`: Contains other relevant documentation apart from the README.md.
+   -  `apps/head/`: Source code for the head office application.
+   -  `apps/branch/`: Source code for the branch office application.
 
-- `libs/`: Contains modules that are shared between the two applications.
+-  `docs/`: Contains other relevant documentation apart from the README.md.
 
-- `scripts/`: Contains various scripts required to start the entire system.
+-  `libs/`: Contains modules that are shared between the two applications.
+
+-  `scripts/`: Contains various scripts required to start the entire system.
 
 ## How it works ?
 
@@ -47,6 +49,10 @@ Multiple instances of the branch office application can be deployed to synchroni
 
 ## Installation and Setup
 
+> [!NOTE]
+> The installation process has been thoroughly tested on a Debian machine and is expected to work smoothly on all Unix-based systems. <br>
+> However, it is important to note that compatibility with other operating systems, such as Windows, cannot be guaranteed.
+
 First, clone the repository.
 
 ```sh
@@ -54,10 +60,64 @@ git clone https://github.com/omar-besbes/database-synchronization-app.git
 ```
 
 <details> 
-<summary> Using `docker compose` (Recommended) </summary>
+<summary> Using <code>kubectl</code> (Recommended) </summary>
+<br>
 
-> The installation process has been thoroughly tested on a Debian machine and is expected to work smoothly on all Unix-based systems. <br>
-> However, it is important to note that compatibility with other operating systems, such as Windows, cannot be guaranteed.
+If you want the full experience (including on-demand scaling of branch offices),
+you have to use kubernetes.
+
+You have to make sure that you have a cluster in your system.
+This can be achieved by installing a tool like [minikube](https://minikube.sigs.k8s.io/docs/start/).
+
+To verify that you have a cluster, run:
+
+```sh
+kubectl get po -A
+```
+
+You should get an output like this:
+
+```sh
+NAMESPACE              NAME                                         READY   STATUS   RESTARTS        AGE
+kube-system            coredns-5dd5756b68-cqwk6                     1/1     Running   1 (11h ago)     18h
+kube-system            etcd-minikube                                1/1     Running   1 (11h ago)     18h
+kube-system            kube-apiserver-minikube                      1/1     Running   1 (3h20m ago)   18h
+kube-system            kube-controller-manager-minikube             1/1     Running   1 (11h ago)     18h
+kube-system            kube-proxy-mcjpb                             1/1     Running   1 (11h ago)     18h
+kube-system            kube-scheduler-minikube                      1/1     Running   1 (11h ago)     18h
+kube-system            storage-provisioner                          1/1     Running   3 (3h19m ago)   18h
+kubernetes-dashboard   dashboard-metrics-scraper-7fd5cb4ddc-sg5k5   1/1     Running   1 (11h ago)     18h
+kubernetes-dashboard   kubernetes-dashboard-8694d4445c-jnjwm        1/1     Running   2 (3h19m ago)   18h
+```
+
+Please, either:
+- copy the scripts folder under `orchestration/shared` using: `cp -r scripts/ orchestration/shared/`
+- or (I personally prefer this) create a hard link for each file under `scripts` in `orchestration/shared/scripts`
+   using: `ln  scripts/* orchestration/shared/scripts/`
+
+To get our system up and running, please run this:
+
+```sh
+kubectl apply -k orchestration/head-office/
+kubectl apply -k orchestration/branch-office/
+```
+
+This will generate the necessary config maps for the 3 deployments (rabbitmq broker, head office and branch office) to start.
+
+If you are using `minikube`, you can visualize your cluster by running:
+
+```sh
+minikube dashboard
+```
+
+</details>
+
+<details> 
+<summary> Using <code>docker compose</code> (Recommended) </summary>
+<br>
+
+If you just want to quickly this system working without needing multiple branch offices,
+this methods suits your need.
 
 To get our system up and running, please run this:
 
@@ -69,11 +129,11 @@ docker compose up
 
 This will generate a `.env` file containing the necessary credentials and ssl certificates in order for the databases to start.
 
-
 </details>
 
 <details> 
 <summary> Manually </summary>
+<br>
 
 I don't have any idea why someone would want to start the whole system manually.
 For the sake of completeness, here it is.
@@ -90,11 +150,11 @@ yarn
 
 2. Configure the application settings
 
-- make sure you have a relational database up and running for each office you plan on running.
-- make sure you have a RabbitMQ instance up and running. You can find out how to install and set up a RabbitMQ instance
-  locally [here](https://rabbitmq.com), or you can use managed RabbitMQ instance [here](https://www.cloudamqp.com).
-- use the `.env.example` files (there is one in `apps/head` for the head office and one in `apps/branch` for branch
-  offices) to generate `.env` for each office. Put them besides the corresponding `.env.example` files.
+-  make sure you have a relational database up and running for each office you plan on running.
+-  make sure you have a RabbitMQ instance up and running. You can find out how to install and set up a RabbitMQ instance
+   locally [here](https://rabbitmq.com), or you can use managed RabbitMQ instance [here](https://www.cloudamqp.com).
+-  use the `.env.example` files (there is one in `apps/head` for the head office and one in `apps/branch` for branch
+   offices) to generate `.env` for each office. Put them besides the corresponding `.env.example` files.
 
 3. Build & start the applications
 
@@ -120,9 +180,9 @@ important to wait for the branch office app to start before moving on to another
 
 ## Deployment Considerations
 
-- Ensure proper network connectivity between the head office and branch offices.
-- Configure RabbitMQ for high availability and fault tolerance.
-- Implement security measures to protect data during transmission and storage.
+-  Ensure proper network connectivity between the head office and branch offices.
+-  Configure RabbitMQ for high availability and fault tolerance.
+-  Implement security measures to protect data during transmission and storage.
 
 ## Forking and Customization
 
