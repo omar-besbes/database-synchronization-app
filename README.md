@@ -1,23 +1,23 @@
 # Database Synchronization System
 
-![RabbitMQ](https://img.shields.io/badge/Rabbitmq-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white)
-![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
-![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white)
+[![RabbitMQ](https://img.shields.io/badge/Rabbitmq-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white)](https://www.rabbitmq.com)
+[![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com)
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com)
+[![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white)](https://kubernetes.io)
 
 ## Overview
 
-This repository contains the source code for a distributed database synchronization system designed for organizations
-with multiple offices, such as banks or retail chains. The system consists of two applications: one representing the
-head office (HO) and the other for branch offices (BO). The system utilizes RabbitMQ as a messaging broker to facilitate
-communication and synchronization between the head office and branch offices.
+This database synchronization system addresses the challenge of synchronizing distributed databases in a scenario with unique constraints. In a setup comprising a Head Office (HO) and multiple Branch Offices (BOs) spread across different locations, including areas with limited internet connectivity, traditional synchronization methods prove inadequate. To overcome these challenges, this solution leverages RabbitMQ message queues to facilitate efficient data exchange between offices.
 
-## Features
+## Features Roadmap
 
--  Synchronization of databases across multiple offices in real-time.
--  Automatic synchronization upon internet outage recovery.
--  Highly available and fault-tolerant messaging infrastructure using RabbitMQ.
--  Support for dynamic schema evolution.
+-  [x] Abstraction over the number of branch offices (BOs), allowing for dynamic scalability.
+-  [x] Support for any kind of operation on the database (Create, Update, Delete).
+-  [x] Database-agnostic (SQL databases for now).
+-  [x] Manual synchronization of databases across multiple offices.
+-  [ ] Automatic synchronization upon internet outage recovery.
+-  [ ] Real-time synchronization.
+-  [ ] Support for dynamic schema evolution.
 
 ## Project Structure
 
@@ -32,20 +32,38 @@ The project follows a monorepo style structure, organized into the following dir
 
 -  `libs/`: Contains modules that are shared between the two applications.
 
+-  `orchestration/`: Contains configuraton files that hold
+
 -  `scripts/`: Contains various scripts required to start the entire system.
 
 ## How it works ?
 
-### Head Office Application
+We will talk about how RabbitMQ makes it easy to manage communications between the different offices 
+and then we will tackle how synchronization works.
 
-The head office application serves as the central hub for database synchronization. It communicates with branch offices
-and manages the synchronization process. Deploying one instance of the head office application is sufficient to
-synchronize data with multiple branch offices.
+If you don't know about RabbitMQ, you can read more about it [here](docs/rabbitmq.md) or you can google it and come back later.
 
-### Branch Office Application
+### RabbitMQ
 
-The branch office application represents individual offices that synchronize their databases with the head office.
-Multiple instances of the branch office application can be deployed to synchronize data from different locations.
+There are 3 main entities envolved:
+- RabbitMQ broker
+- Head Office
+- Branch Office
+
+Communications happen only between HO and BOs, so no inter-communications between BOs.
+Each office has its own queue to consume messages from.
+This way, even if the recipient is not available, the sender can still send its messages and the recipient will consume them when it's back.
+We will have 2 `fanout` exchanges:
+- One that recieves messages from the BOs and forwards them to the HO queue.
+- One that recieves messages from the HO and forwards them to each BO queue.
+
+The concept of exchanges is what will enable adding or removing BOs without the need to change any office's configuration or RabbitMQ's.
+
+![](docs/RabbitMQ_synchronization_app_diagram.png)
+
+### Synchronization
+
+TODO
 
 ## Installation and Setup
 
@@ -63,8 +81,10 @@ git clone https://github.com/omar-besbes/database-synchronization-app.git
 <summary> Using <code>kubectl</code> (Recommended) </summary>
 <br>
 
-If you want the full experience (including on-demand scaling of branch offices),
-you have to use kubernetes.
+If you want the full experience, you have to use kubernetes.
+This includes the following:
+- having multiple BOs
+- on-demand scaling of BOs
 
 You have to make sure that you have a cluster in your system.
 This can be achieved by installing a tool like [minikube](https://minikube.sigs.k8s.io/docs/start/).
@@ -91,8 +111,9 @@ kubernetes-dashboard   kubernetes-dashboard-8694d4445c-jnjwm        1/1     Runn
 ```
 
 Please, either:
-- copy the scripts folder under `orchestration/shared` using: `cp -r scripts/ orchestration/shared/`
-- or (I personally prefer this) create a hard link for each file under `scripts` in `orchestration/shared/scripts`
+
+-  copy the scripts folder under `orchestration/shared` using: `cp -r scripts/ orchestration/shared/`
+-  or (I personally prefer this) create a hard link for each file under `scripts` in `orchestration/shared/scripts`
    using: `ln  scripts/* orchestration/shared/scripts/`
 
 To get our system up and running, please run this:
@@ -117,7 +138,7 @@ minikube dashboard
 <br>
 
 If you just want to quickly this system working without needing multiple branch offices,
-this methods suits your need.
+this methods suits your need. This will run a single HO and a single BO connected through RabbitMQ broker.
 
 To get our system up and running, please run this:
 
@@ -178,11 +199,12 @@ important to wait for the branch office app to start before moving on to another
 
 </details>
 
-## Deployment Considerations
+## Why Kubernetes ?
 
--  Ensure proper network connectivity between the head office and branch offices.
--  Configure RabbitMQ for high availability and fault tolerance.
--  Implement security measures to protect data during transmission and storage.
+In the setup section, Kubernetes is utilized for orchestrating the deployment. However, the system itself does not inherently leverage Kubernetes features such as load balancing or auto-scaling. Instead, Kubernetes is chosen primarily for simplifying testing and demonstrations.
+
+In real-world deployments, where offices are geographically dispersed and may operate on separate physical servers, Kubernetes may not be necessary.
+
 
 ## Forking and Customization
 
