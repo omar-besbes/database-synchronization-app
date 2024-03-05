@@ -32,7 +32,7 @@ The project follows a monorepo style structure, organized into the following dir
 
 -  `libs/`: Contains modules that are shared between the two applications.
 
--  `orchestration/`: Contains configuraton files that hold
+-  `orchestration/`: Contains Kubernetes configuraton files that describe how the app deployment and management should be orchestrated.
 
 -  `scripts/`: Contains various scripts required to start the entire system.
 
@@ -50,9 +50,11 @@ There are 3 main entities envolved:
 - Head Office
 - Branch Office
 
-Communications happen only between HO and BOs, so no inter-communications between BOs.
 Each office has its own queue to consume messages from.
 This way, even if the recipient is not available, the sender can still send its messages and the recipient will consume them when it's back.
+
+Communications happen only between HO and BOs, so no inter-communications between BOs.
+
 We will have 2 `fanout` exchanges:
 - One that recieves messages from the BOs and forwards them to the HO queue.
 - One that recieves messages from the HO and forwards them to each BO queue.
